@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="description" content="Findly compares products from participating retailers, helping you discover useful deals.">
-<title>Findly — Smarter shopping, less searching</title>
+<meta name="description" content="Findly helps UK families discover Christmas toy gifts by age, budget and interest from participating retailers.">
+<title>Findly — Christmas Toy Finder UK</title>
 <style>
 :root{font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,sans-serif;color:#edf2fc;background:#0b1020}
 *{box-sizing:border-box}body{margin:0}a{color:inherit}.shell{max-width:1160px;margin:auto;padding:0 22px}
@@ -13,7 +13,7 @@ nav a{font-size:14px;text-decoration:none;color:#b8c8df}nav a:hover{color:white}
 h1{font-size:clamp(38px,6vw,68px);line-height:1.06;letter-spacing:-2.5px;margin:22px 0 18px;max-width:750px}
 h1 em{font-style:normal;color:#6ce2d3}p.lead{max-width:700px;color:#b9c8db;font-size:18px;line-height:1.65}
 .searchbar{display:flex;gap:10px;max-width:740px;margin:30px 0 12px}input,select{border-radius:12px;padding:16px;background:#19243a;color:white;border:1px solid #45536b;font:inherit}
-input{flex:1;min-width:0}select{min-width:175px}.note{color:#8e9bb2;font-size:13px;line-height:1.6}
+input{flex:1;min-width:0}select{min-width:175px}.note{color:#8e9bb2;font-size:13px;line-height:1.6}.filters{display:flex;gap:10px;flex-wrap:wrap;margin:18px 0}.filters select{min-width:150px}.giftIdeas{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px}.giftIdeas button{border:1px solid #3e6871;background:#1b3541;color:#b3f6ec;border-radius:100px;padding:9px 14px;font:inherit;cursor:pointer}.giftIdeas button:hover{background:#265765}
 section{padding:24px 0 70px}.sectionhead{display:flex;align-items:center;justify-content:space-between;gap:15px;flex-wrap:wrap}
 h2{font-size:25px;letter-spacing:-.6px}.count{color:#a1b0c5}
 .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:18px}
@@ -30,24 +30,24 @@ footer{border-top:1px solid #ffffff22;padding:30px 0 48px;color:#8e9bb2;font-siz
 @media(max-width:520px){.grid{grid-template-columns:1fr}.hero{padding-top:42px}h1{letter-spacing:-1.7px}}
 </style></head><body>
 <header><div class="shell"><nav><div class="logo">find<span>ly</span><div class="tiny">Discover better. Buy smarter.</div></div><a href="#discover">Explore products</a></nav></div></header>
-<main><div class="hero"><div class="shell"><div class="eyebrow">Your smarter shopping companion</div>
-<h1>Find the right thing.<br><em>Without the endless searching.</em></h1>
-<p class="lead">Discover and compare products from participating retailers in one simple place. Search across categories, explore useful finds, then buy directly from the retailer.</p>
-<div class="searchbar"><input id="query" type="search" aria-label="Search products" placeholder="Search products, brands or categories…">
-<select id="category" aria-label="Category"><option value="">All categories</option></select></div>
+<main><div class="hero"><div class="shell"><div class="eyebrow">🎁 Findly Christmas Gift Finder • UK</div>
+<h1>Find their perfect gift.<br><em>Without the endless searching.</em></h1>
+<p class="lead">Discover toys and gifts by age, budget and interest. Compare approved retailer offers in one place and buy directly from the shop.</p>
+<div class="searchbar"><input id="query" type="search" aria-label="Search products" placeholder="Search toys, games, creative kits…">
+<select id="category" aria-label="Toy category"><option value="">All toy categories</option></select></div><div class="filters"><select id="age" aria-label="Age group"><option value="">Any age</option><option value="0-2">0–2 years</option><option value="3-5">3–5 years</option><option value="6-8">6–8 years</option><option value="9-12">9–12 years</option><option value="13-17">13–17 years</option></select><select id="budget" aria-label="Budget"><option value="">Any budget</option><option value="15">Under £15</option><option value="30">Under £30</option><option value="50">Under £50</option><option value="100">Under £100</option></select></div><div class="giftIdeas"><button type="button" data-search="building">🧱 Building</button><button type="button" data-search="creative">🎨 Creative</button><button type="button" data-search="science">🔬 Science</button><button type="button" data-search="board game">🎲 Games</button><button type="button" data-search="plush">🧸 Plush</button></div>
 <div class="note">Prices and availability are supplied by retailers and may change. Always confirm at checkout.</div></div></div>
-<section class="shell" id="discover"><div class="sectionhead"><h2>Explore products</h2><span id="count" class="count">Connecting product catalogue…</span></div><div id="products" class="grid"></div><div id="empty" class="empty" hidden></div></section></main>
+<section class="shell" id="discover"><div class="sectionhead"><h2>Christmas toy discoveries</h2><span id="count" class="count">Connecting product catalogue…</span></div><div id="products" class="grid"></div><div id="empty" class="empty" hidden></div></section></main>
 <footer><div class="shell">Findly may earn a commission when you purchase through qualifying retailer links, at no additional cost to you. We only link to retailers when we have permission to do so. Product recommendations are independent of any promised earnings.<br>© <span id="year"></span> Findly. All rights reserved.</div></footer>
 <script>
-const state={products:[],query:"",category:""};const byId=id=>document.getElementById(id);
+const state={products:[],query:"",category:"",age:"",budget:""};const byId=id=>document.getElementById(id);
 byId("year").textContent=new Date().getFullYear();
 const validUrl=s=>{try{const u=new URL(s);return ["https:","http:"].includes(u.protocol)?u.href:null}catch{return null}};
 function render(){
-const matches=state.products.filter(p=>(!state.category||p.category===state.category)&&[p.title,p.category,p.merchant].join(" ").toLowerCase().includes(state.query));
+const matches=state.products.filter(p=>{const ageOk=!state.age||(Number.isFinite(Number(p.age_min))&&Number.isFinite(Number(p.age_max))&&p.age_min!==undefined&&p.age_max!==undefined&&Number(p.age_min)<=Number(state.age.split("-")[1])&&Number(p.age_max)>=Number(state.age.split("-")[0]));const budgetOk=!state.budget||(p.price_gbp!==undefined&&p.price_gbp!==null&&Number(p.price_gbp)>0&&Number(p.price_gbp)<Number(state.budget));return (!state.category||p.category===state.category)&&ageOk&&budgetOk&&[p.title,p.category,p.merchant,p.tags||""].join(" ").toLowerCase().includes(state.query)});
 byId("count").textContent=matches.length+" product"+(matches.length===1?"":"s");
 const root=byId("products");root.replaceChildren();
 for(const p of matches){const article=document.createElement("article");article.className="product";
-const art=document.createElement("div");art.className="art";art.textContent="✦";
+const art=document.createElement("div");art.className="art";art.textContent="🎁";
 const details=document.createElement("div");details.className="details";
 const cat=document.createElement("div");cat.className="cat";cat.textContent=p.category;
 const title=document.createElement("h3");title.textContent=p.title;
@@ -57,9 +57,12 @@ const price=document.createElement("span");price.className="price";price.textCon
 const a=document.createElement("a");a.className="btn";a.textContent="View retailer";a.href=validUrl(p.affiliate_url)||"#";a.target="_blank";a.rel="noopener noreferrer sponsored";if(a.href.endsWith("#")){a.setAttribute("aria-disabled","true");a.removeAttribute("href")}
 bottom.append(price,a);details.append(cat,title,merch,bottom);article.append(art,details);root.append(article)}
 const empty=byId("empty");empty.hidden=matches.length!==0;
-empty.replaceChildren();if(!matches.length){const b=document.createElement("b");b.textContent=state.products.length?"No matching products yet":"Product connections are being prepared";const p=document.createElement("p");p.textContent=state.products.length?"Try another search or category.":"We are connecting approved retailer feeds before publishing offers. Check back for verified product listings.";empty.append(b,p)}
+empty.replaceChildren();if(!matches.length){const b=document.createElement("b");b.textContent=state.products.length?"No matching products yet":"Approved toy listings are coming soon";const p=document.createElement("p");p.textContent=state.products.length?"Try another search or category.":"Findly is preparing its first authorised UK toy offers. Retailer connections are not active yet; no products or discounts are being claimed.";empty.append(b,p)}
 }
 byId("query").addEventListener("input",e=>{state.query=e.target.value.trim().toLowerCase();render()});
 byId("category").addEventListener("change",e=>{state.category=e.target.value;render()});
+byId("age").addEventListener("change",e=>{state.age=e.target.value;render()});
+byId("budget").addEventListener("change",e=>{state.budget=e.target.value;render()});
+for(const b of document.querySelectorAll("[data-search]"))b.addEventListener("click",()=>{state.query=b.dataset.search;byId("query").value=state.query;render()});
 (async()=>{try{const r=await fetch("./catalog.json",{cache:"no-store"});if(!r.ok)throw Error("catalog unavailable");const data=await r.json();state.products=(data.products||[]).filter(p=>p.title&&p.category&&p.merchant&&validUrl(p.affiliate_url));for(const c of [...new Set(state.products.map(p=>p.category))].sort()){const o=document.createElement("option");o.value=c;o.textContent=c;byId("category").append(o)}}catch(e){console.warn("Catalogue unavailable",e)}render()})();
 </script></body></html>
