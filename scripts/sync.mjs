@@ -18,6 +18,8 @@ if (!Array.isArray(payload.products)) throw new Error("Feed must contain product
 const allowed=(s)=>{try{const u=new URL(s);return u.protocol==="https:"}catch{return false}};
 const clean=s=>String(s??"").trim().slice(0,250);
 const seen=new Set();
+const validAge=n=>Number.isInteger(Number(n))&&Number(n)>=0&&Number(n)<=120;
+const validPrice=n=>Number.isFinite(Number(n))&&Number(n)>0&&Number(n)<100000;
 const products=[];
 for (const raw of payload.products.slice(0,10000)) {
  const title=clean(raw.title), category=clean(raw.category), merchant=clean(raw.merchant);
@@ -26,7 +28,7 @@ for (const raw of payload.products.slice(0,10000)) {
  const key=merchant+"|"+title+"|"+affiliate_url;
  if(seen.has(key))continue;
  seen.add(key);
- products.push({title,category,merchant,affiliate_url,price_label:clean(raw.price_label)});
+ products.push({title,category,merchant,affiliate_url,price_label:clean(raw.price_label),...(validPrice(raw.price_gbp)?{price_gbp:Number(raw.price_gbp)}:{}),...(validAge(raw.age_min)&&validAge(raw.age_max)&&Number(raw.age_min)<=Number(raw.age_max)?{age_min:Number(raw.age_min),age_max:Number(raw.age_max)}:{}),tags:clean(raw.tags)});
 }
 await writeFile("catalog.json",JSON.stringify({updated_at:new Date().toISOString(),products},null,2)+"\n");
 console.log("Synced "+products.length+" verified-format product records.");
